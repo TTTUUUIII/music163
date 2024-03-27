@@ -12,9 +12,8 @@ import java.io.InputStreamReader
 val gson = Gson();
 
 private var temp = ""
-private val client = HttpClient()
 
-class Spider {
+class Spider(val client: HttpClient = HttpClient()) {
 
     /**
      * 根据歌曲ID获取歌词

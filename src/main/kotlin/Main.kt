@@ -1,11 +1,11 @@
 import org.netease.music.MusicEntity
 import org.netease.music.Spider
+import org.netease.music.net.HttpClient
 import org.netease.music.utils.Downloader
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
-val spider = Spider()
+val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U"))))
 const val OUT_DIR = "/home/deliu/Desktop/Music"
 
 fun main() {
