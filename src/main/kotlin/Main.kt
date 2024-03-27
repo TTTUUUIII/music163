@@ -6,7 +6,7 @@ import java.nio.file.Paths
 import java.util.*
 
 val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U"))))
-const val OUT_DIR = "/home/deliu/Desktop/Music"
+const val OUT_DIR = "C:\\Users\\wn123\\Desktop\\media"
 
 fun main() {
     val playList = spider.fetchPlayList(2724514503)
@@ -37,6 +37,6 @@ fun main() {
         }
     }
 
-    Downloader.generateFfmpegScript(musicEntities, Paths.get(OUT_DIR))
+    Downloader.generateFfmpegScript(musicEntities, Paths.get(OUT_DIR), playList?.name)
 }
 

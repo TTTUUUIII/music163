@@ -26,7 +26,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "limit" to 1000,
             "csrf_token" to "bfc4ad13014f5066cdee4e18aba3e682"
         ).let {
-            encrypt(gson.toJson(it).replace("\'", "\'"))
+            encrypt(gson.toJson(it).replace("\"", "\\\""))
         }
 
         if (status) {
@@ -56,7 +56,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "n" to 1000,
             "csrf_token" to "bfc4ad13014f5066cdee4e18aba3e682"
         ).let {
-            encrypt(gson.toJson(it).replace("\'", "\'"))
+            encrypt(gson.toJson(it).replace("\"", "\\\""))
         }
         if (status) {
             val type = object: TypeToken<Map<String, String>>(){}.type;
@@ -69,6 +69,8 @@ class Spider(val client: HttpClient = HttpClient()) {
                     }
                 return playListResponse?.playlist
             }
+        } else {
+            System.err.println("Unable request play list.")
         }
         return null
     }
@@ -84,7 +86,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "encodeType" to "ac3",
             "csrf_token" to "c7e1c88fbff88d2a5897e3c5e22af657",
         ).let {
-            encrypt(gson.toJson(it).replace("\'", "\'"))
+            encrypt(gson.toJson(it).replace("\"", "\\\""))
         }
         if (status) {
             val type = object: TypeToken<Map<String, String>>(){}.type;
@@ -116,6 +118,6 @@ class Spider(val client: HttpClient = HttpClient()) {
 
 
     companion object {
-       private val JS_PATH: String = Companion::class.java.classLoader.getResource("core.js")?.path!!
+       private val JS_PATH: String = "C:\\Users\\wn123\\Desktop\\163music\\assets\\core.js"
     }
 }
