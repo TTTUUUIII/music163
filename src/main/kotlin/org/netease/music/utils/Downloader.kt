@@ -6,9 +6,6 @@ import java.nio.file.Path
 
 class Downloader {
     companion object {
-        val OS = System.getProperty("os.name").lowercase()
-        val WIN = OS.contains("windows")
-        val LB = if (WIN) "\r\n" else "\n"
         fun generateFfmpegCommand(musicEntities: List<MusicEntity>): String {
             val commands = StringBuilder()
             for (music in musicEntities) {

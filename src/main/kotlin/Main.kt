@@ -6,10 +6,10 @@ import java.nio.file.Paths
 import java.util.*
 
 val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U"))))
-const val OUT_DIR = "C:\\Users\\wn123\\Desktop\\media"
+const val OUT_DIR = "/home/deliu/Desktop/Music"
 
 fun main() {
-    val playList = spider.fetchPlayList(2724514503)
+    val playList = spider.fetchPlayList(9556857649)
     val musicEntities = mutableListOf<MusicEntity>()
     playList?.tracks?.forEach { item ->
         musicEntities.add(

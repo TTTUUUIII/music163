@@ -6,6 +6,7 @@ import org.netease.music.net.API_PLAY_LIST
 import org.netease.music.net.API_SONG
 import org.netease.music.net.API_SONG_LYRIC
 import org.netease.music.net.HttpClient
+import org.netease.music.utils.WIN
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -13,7 +14,7 @@ val gson = Gson();
 
 private var temp = ""
 
-class Spider(val client: HttpClient = HttpClient()) {
+class Spider(val client: HttpClient = HttpClient(), var js: String = "") {
 
     /**
      * 根据歌曲ID获取歌词
@@ -26,7 +27,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "limit" to 1000,
             "csrf_token" to "bfc4ad13014f5066cdee4e18aba3e682"
         ).let {
-            encrypt(gson.toJson(it).replace("\"", "\\\""))
+            encrypt(gson.toJson(it))
         }
 
         if (status) {
@@ -56,7 +57,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "n" to 1000,
             "csrf_token" to "bfc4ad13014f5066cdee4e18aba3e682"
         ).let {
-            encrypt(gson.toJson(it).replace("\"", "\\\""))
+            encrypt(gson.toJson(it))
         }
         if (status) {
             val type = object: TypeToken<Map<String, String>>(){}.type;
@@ -86,7 +87,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "encodeType" to "ac3",
             "csrf_token" to "c7e1c88fbff88d2a5897e3c5e22af657",
         ).let {
-            encrypt(gson.toJson(it).replace("\"", "\\\""))
+            encrypt(gson.toJson(it))
         }
         if (status) {
             val type = object: TypeToken<Map<String, String>>(){}.type;
@@ -105,19 +106,22 @@ class Spider(val client: HttpClient = HttpClient()) {
     }
 
     private fun encrypt(content: String): Boolean {
-        val runtime = Runtime.getRuntime()
-        val exec = runtime.exec("node $JS_PATH $content")
-        exec.waitFor()
-        val status = exec.exitValue()
-        BufferedReader(InputStreamReader(if (status == 0) exec.inputStream else exec.errorStream))
-            .use {
-                temp = it.readText()
+        if (js.isEmpty()) js = JS_PATH
+        (if (WIN) content.replace("\"", "\\\"") else content)
+            .let {
+                val runtime = Runtime.getRuntime()
+                val exec = runtime.exec("node $js $content")
+                exec.waitFor()
+                val status = exec.exitValue()
+                BufferedReader(InputStreamReader(if (status == 0) exec.inputStream else exec.errorStream))
+                    .use {
+                        temp = it.readText()
+                    }
+                return status == 0
             }
-        return status == 0
     }
 
-
     companion object {
-       private val JS_PATH: String = "C:\\Users\\wn123\\Desktop\\163music\\assets\\core.js"
+        val JS_PATH = Companion::class.java.classLoader.getResource("core.js")!!.path
     }
 }
