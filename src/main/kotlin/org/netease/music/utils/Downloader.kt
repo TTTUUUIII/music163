@@ -14,14 +14,13 @@ class Downloader {
                     it.artistName
                 }
                 val metadata = arrayOf(
-                    "-metadata title=\'${music.name.replace("\"", "'")}\'",
-                    "-metadata artist=\'${artists.replace("\"", "'")}\'",
-                    "-metadata album=\'${music.album.albumName.replace("\"", "'")}\'",
-                    "-metadata album_artist=\'${music.album.albumName.replace("\"", "'")}\'"
+                    "-metadata title=\'${music.name}\'",
+                    "-metadata artist=\'${artists}\'",
+                    "-metadata album=\'${music.album.albumName}\'",
+                    "-metadata album_artist=\'${music.album.albumName}\'"
                 ).joinToString(" ")
                 val output = "${music.name}-${artists}.${music.type}"
                     .replace("/","")
-                    .replace("\"", "'")
                 commands.append("ffmpeg -i \'${music.url}\' -i \'${music.album.picUrl}\' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \'$output\'$LB")
             }
             return commands.toString()
@@ -52,7 +51,7 @@ class Downloader {
                     script.append(")$LB")
                     script.append("cd $sub$LB")
                 }
-                script.append(generateFfmpegCommand(musicEntities).replace("'", "\""))
+                script.append(generateFfmpegCommand(musicEntities))
                 script.append("$LB${LB}PAUSE$LB")
             } else {
                 script.append("#!/bin/sh$LB$LB")

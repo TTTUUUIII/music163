@@ -9,7 +9,7 @@ val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.gete
 const val OUT_DIR = "/home/deliu/Desktop/Music"
 
 fun main() {
-    val playList = spider.fetchPlayList(9556857649)
+    val playList = spider.fetchPlayList(2724514503)
     val musicEntities = mutableListOf<MusicEntity>()
     playList?.tracks?.forEach { item ->
         musicEntities.add(
