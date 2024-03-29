@@ -101,7 +101,6 @@ class Spider(val client: HttpClient = HttpClient(), var js: String = "") {
                     }
             }
         }
-
         return collector
     }
 
