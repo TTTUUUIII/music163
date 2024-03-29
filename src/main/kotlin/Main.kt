@@ -1,3 +1,4 @@
+import org.netease.music.FEATURE_AUTO_DOWNLOAD_LYRIC
 import org.netease.music.MusicEntity
 import org.netease.music.Spider
 import org.netease.music.net.HttpClient
@@ -20,11 +21,13 @@ fun main() {
                 item.album,
                 listOf(item.high, item.medium, item.low)
             ).also {
-                try {
-                    val lyricResponse = spider.fetchLyric(item.musicId)
-                    it.lyric = lyricResponse?.lyric
-                } catch (e: Exception) {
-                    e.printStackTrace(System.err)
+                if (FEATURE_AUTO_DOWNLOAD_LYRIC) {
+                    try {
+                        val lyricResponse = spider.fetchLyric(item.musicId)
+                        it.lyric = lyricResponse?.lyric
+                    } catch (e: Exception) {
+                        e.printStackTrace(System.err)
+                    }
                 }
             }
         )
