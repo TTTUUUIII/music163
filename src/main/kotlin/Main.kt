@@ -1,13 +1,13 @@
-import org.netease.music.FEATURE_AUTO_DOWNLOAD_LYRIC
+import org.netease.music.conf.FEATURE_DOWNLOAD_LYRIC
 import org.netease.music.MusicEntity
 import org.netease.music.Spider
+import org.netease.music.conf.FEATURE_OUT
 import org.netease.music.net.HttpClient
 import org.netease.music.utils.Downloader
 import java.nio.file.Paths
 import java.util.*
 
 val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U"))))
-const val OUT_DIR = "/home/deliu/Desktop/Music"
 
 fun main() {
     val playList = spider.fetchPlayList(2724514503)
@@ -21,7 +21,7 @@ fun main() {
                 item.album,
                 listOf(item.high, item.medium, item.low)
             ).also {
-                if (FEATURE_AUTO_DOWNLOAD_LYRIC) {
+                if (FEATURE_DOWNLOAD_LYRIC) {
                     try {
                         val lyricResponse = spider.fetchLyric(item.musicId)
                         it.lyric = lyricResponse?.lyric
@@ -47,6 +47,6 @@ fun main() {
         }
     }
 
-    Downloader.generateFfmpegScript(musicEntities, Paths.get(OUT_DIR), playList?.name)
+    Downloader.generateFfmpegScript(musicEntities, Paths.get(FEATURE_OUT), playList?.name)
 }
 
