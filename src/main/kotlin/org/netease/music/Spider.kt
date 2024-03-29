@@ -3,6 +3,7 @@ package org.netease.music
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.netease.music.conf.FEATURE_ENCRYPT_PATH
+import org.netease.music.conf.FEATURE_NODE_JS_PATH
 import org.netease.music.net.API_PLAY_LIST
 import org.netease.music.net.API_SONG
 import org.netease.music.net.API_SONG_LYRIC
@@ -108,7 +109,7 @@ class Spider(val client: HttpClient = HttpClient()) {
         (if (WIN) content.replace("\"", "\\\"") else content)
             .let {
                 val runtime = Runtime.getRuntime()
-                val exec = runtime.exec("node $ENCRYPT_SCRIPT_PATH $content")
+                val exec = runtime.exec("$FEATURE_NODE_JS_PATH $ENCRYPT_SCRIPT_PATH $content")
                 exec.waitFor()
                 val status = exec.exitValue()
                 BufferedReader(InputStreamReader(if (status == 0) exec.inputStream else exec.errorStream))

@@ -1,6 +1,7 @@
 package org.netease.music.utils
 
 import org.netease.music.MusicEntity
+import org.netease.music.conf.FEATURE_FFMPEG_PATH
 import java.io.FileOutputStream
 import java.nio.file.Path
 
@@ -37,7 +38,7 @@ class Downloader {
                 ).joinToString(" ")
                 val output = "${music.name}-${artists}.${music.type}"
                     .replace("/","")
-                commands.append("ffmpeg -i \'${music.url}\' -i \'${music.album.picUrl}\' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \'$output\'$LB")
+                commands.append("$FEATURE_FFMPEG_PATH -i \'${music.url}\' -i \'${music.album.picUrl}\' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \'$output\'$LB")
             }
             return commands.toString()
         }
