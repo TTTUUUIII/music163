@@ -19,7 +19,14 @@ fun main() {
                 item.artists,
                 item.album,
                 listOf(item.high, item.medium, item.low)
-            )
+            ).also {
+                try {
+                    val lyricResponse = spider.fetchLyric(item.musicId)
+                    it.lyric = lyricResponse?.lyric
+                } catch (e: Exception) {
+                    e.printStackTrace(System.err)
+                }
+            }
         )
     }
     val musicIds = musicEntities.map {

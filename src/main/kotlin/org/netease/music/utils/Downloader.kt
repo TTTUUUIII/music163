@@ -6,6 +6,22 @@ import java.nio.file.Path
 
 class Downloader {
     companion object {
+        fun downloadLyric(musicEntities: List<MusicEntity>, path: Path): Int {
+            var counter = 0
+            musicEntities.forEach { music ->
+                val artists = music.artists.joinToString(",") {
+                    it.artistName
+                }
+                val output = "${music.name}-${artists}.lrc"
+                    .replace("/","")
+                music.lyric?.let { lyric ->
+                    FileOutputStream(path.resolve(output).toFile()).write(lyric.lyric.encodeToByteArray())
+                    counter++
+                }
+            }
+            return counter
+        }
+
         fun generateFfmpegCommand(musicEntities: List<MusicEntity>): String {
             val commands = StringBuilder()
             for (music in musicEntities) {

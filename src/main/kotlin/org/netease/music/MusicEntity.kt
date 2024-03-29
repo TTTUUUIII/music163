@@ -8,5 +8,6 @@ data class MusicEntity(
     val qualities: List<MusicQuality>,
     var bitRate: Int = 44100,
     var url: String? = null,
-    var type: String? = null
+    var type: String? = null,
+    var lyric: Lyric? = null
 )
