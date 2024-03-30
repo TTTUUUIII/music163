@@ -109,7 +109,7 @@ class Spider(val client: HttpClient = HttpClient()) {
         (if (WIN) content.replace("\"", "\\\"") else content)
             .let {
                 val runtime = Runtime.getRuntime()
-                val exec = runtime.exec("$FEATURE_NODE_JS_PATH $ENCRYPT_SCRIPT_PATH $content")
+                val exec = runtime.exec("$FEATURE_NODE_JS_PATH $ENCRYPT_SCRIPT_PATH $it")
                 exec.waitFor()
                 val status = exec.exitValue()
                 BufferedReader(InputStreamReader(if (status == 0) exec.inputStream else exec.errorStream))

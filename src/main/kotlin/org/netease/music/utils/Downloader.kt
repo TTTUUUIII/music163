@@ -38,7 +38,7 @@ class Downloader {
                 ).joinToString(" ")
                 val output = "${music.name}-${artists}.${music.type}"
                     .replace("/","")
-                commands.append("$FEATURE_FFMPEG_PATH -i \'${music.url}\' -i \'${music.album.picUrl}\' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \'$output\'$LB")
+                commands.append("$FEATURE_FFMPEG_PATH -i \'${music.url}\' -i \'${music.album.picUrl}\' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \'$output\'$LB$LB")
             }
             return commands.toString()
         }
@@ -66,7 +66,7 @@ class Downloader {
                     script.append("if not exist $sub ($LB")
                     script.append("\tmd $sub$LB")
                     script.append(")$LB")
-                    script.append("cd $sub$LB")
+                    script.append("cd $sub$LB$LB")
                 }
                 script.append(generateFfmpegCommand(musicEntities))
                 script.append("$LB${LB}PAUSE$LB")
