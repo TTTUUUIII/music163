@@ -4,7 +4,7 @@ package org.netease.music.conf
 const val FEATURE_DOWNLOAD_LYRIC = false
 
 /*用于加密的JS脚本全路径，若为空则使用resource中的默认脚本*/
-const val FEATURE_ENCRYPT_PATH = ""
+const val FEATURE_ENCRYPT_PATH = ""         /*C:\Users\wn123\Desktop\163music\assets\core.js*/
 
 /*如果NodeJs没有被添加进环境变量，那么需要指定其全路径*/
 const val FEATURE_NODE_JS_PATH = "node"
@@ -13,4 +13,4 @@ const val FEATURE_NODE_JS_PATH = "node"
 const val FEATURE_FFMPEG_PATH = "ffmpeg"
 
 /*下载保存目录*/
-const val FEATURE_OUT = "/home/deliu/Desktop/Music"
+const val FEATURE_OUT = "C:\\Users\\wn123\\Desktop\\新建文件夹"

@@ -15,6 +15,12 @@ class Downloader {
                 }
                 val output = "${music.name}-${artists}.lrc"
                     .replace("/","")
+                    .also {
+                        if (WIN) {
+                            it.replace("\"", "'")
+                        }
+                    }
+
                 music.lyric?.let { lyric ->
                     FileOutputStream(path.resolve(output).toFile()).write(lyric.lyric.encodeToByteArray())
                     counter++
@@ -30,15 +36,34 @@ class Downloader {
                 val artists = music.artists.joinToString(",") {
                     it.artistName
                 }
-                val metadata = arrayOf(
-                    "-metadata title=\'${music.name}\'",
-                    "-metadata artist=\'${artists}\'",
-                    "-metadata album=\'${music.album.albumName}\'",
-                    "-metadata album_artist=\'${music.album.albumName}\'"
-                ).joinToString(" ")
+                val metadata = if (WIN) {
+                    arrayOf(
+                        "-metadata title=\"${music.name.replace("\"", "'")}\"",
+                        "-metadata artist=\"${artists.replace("\"", "'")}\"",
+                        "-metadata album=\"${music.album.albumName.replace("\"", "'")}\"",
+                        "-metadata album_artist=\"${music.album.albumName.replace("\"", "'")}\""
+                    ).joinToString(" ")
+                } else {
+                    arrayOf(
+                        "-metadata title=\'${music.name}\'",
+                        "-metadata artist=\'${artists}\'",
+                        "-metadata album=\'${music.album.albumName}\'",
+                        "-metadata album_artist=\'${music.album.albumName}\'"
+                    ).joinToString(" ")
+                }
                 val output = "${music.name}-${artists}.${music.type}"
                     .replace("/","")
-                commands.append("$FEATURE_FFMPEG_PATH -i \'${music.url}\' -i \'${music.album.picUrl}\' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \'$output\'$LB$LB")
+                    .also {
+                        if (WIN) {
+                            it.replace("\"", "'")
+                        }
+                    }
+                val command = if (WIN) {
+                    "$FEATURE_FFMPEG_PATH -i \"${music.url}\" -i \"${music.album.picUrl}\" $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \"$output\"$LB"
+                } else {
+                    "$FEATURE_FFMPEG_PATH -i '${music.url}' -i '${music.album.picUrl}' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 '$output'$LB"
+                }
+                commands.append(command)
             }
             return commands.toString()
         }

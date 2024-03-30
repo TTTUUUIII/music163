@@ -10,7 +10,7 @@ import java.util.*
 val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U"))))
 
 fun main() {
-    val playList = spider.fetchPlayList(2724514503)
+    val playList = spider.fetchPlayList(9598671220)
     val musicEntities = mutableListOf<MusicEntity>()
     playList?.tracks?.forEach { item ->
         musicEntities.add(
@@ -48,5 +48,8 @@ fun main() {
     }
 
     Downloader.generateFfmpegScript(musicEntities, Paths.get(FEATURE_OUT), playList?.name)
+    if (FEATURE_DOWNLOAD_LYRIC) {
+        Downloader.downloadLyric(musicEntities, Paths.get(FEATURE_OUT))
+    }
 }
 
