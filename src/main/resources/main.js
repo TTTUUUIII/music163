@@ -1,6 +1,3 @@
-
-var CryptoJS = require("crypto-js");
-
 var window = window || {}
 var NEJ = {}
 NEJ.O = {}
@@ -552,21 +549,4 @@ var bvj1x = function(chU3x) {
 function encrypt(data) {
     return bKL0x = window.asrsea(data, bvj1x(["流泪", "强"]), bvj1x(Rj3x.md), bvj1x(["爱心", "女孩", "惊恐", "大笑"]));
 }
-
-let content = process.argv[2]
-if(process.argv[2]) {
-    console.log(JSON.stringify(encrypt(content)))
-} else {
-    throw ""
-}
-
-
-// obj = {
-//     ids: [501468000],
-//     level: "standard",
-//     encodeType: "aac",
-//     csrf_token: "c7e1c88fbff88d2a5897e3c5e22af657"
-// }
-// console.log(JSON.stringify(obj))
-// console.log(encrypt(JSON.stringify(obj)))
 

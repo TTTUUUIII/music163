@@ -2,26 +2,23 @@ package org.netease.music
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.netease.music.conf.FEATURE_ENCRYPT_PATH
-import org.netease.music.conf.FEATURE_NODE_JS_PATH
+import jdk.nashorn.api.scripting.ScriptObjectMirror
 import org.netease.music.net.API_PLAY_LIST
 import org.netease.music.net.API_SONG
 import org.netease.music.net.API_SONG_LYRIC
 import org.netease.music.net.HttpClient
-import org.netease.music.utils.WIN
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import java.nio.file.Paths
 
 class Spider(val client: HttpClient = HttpClient()) {
 
     private val gson = Gson()
-    private var temp = ""
+    private val engine = JSEngine("crypto-js.js", "main.js")
 
     /**
      * 根据歌曲ID获取歌词
      */
     fun fetchLyric(id: Long): LyricResponse? {
-        val status = mapOf(
+        val requestBody = mapOf(
             "id" to id,
             "lv" to -1,
             "tv" to -1,
@@ -31,10 +28,8 @@ class Spider(val client: HttpClient = HttpClient()) {
             encrypt(gson.toJson(it))
         }
 
-        if (status) {
-            val type = object: TypeToken<Map<String, String>>(){}.type;
-            val params = gson.fromJson<Map<String, String>>(temp, type)
-            val response = client.doPost(API_SONG_LYRIC, params)
+        if (requestBody.isNotEmpty()) {
+            val response = client.doPost(API_SONG_LYRIC, requestBody)
             if (response.code == 200) {
                 response.body?.string()
                     ?.let {
@@ -50,7 +45,7 @@ class Spider(val client: HttpClient = HttpClient()) {
      * 根据歌单ID获取歌单信息
      */
     fun fetchPlayList(id: Long): PlayList? {
-        val status = mapOf(
+        val requestBody = mapOf(
             "id" to id,
             "offset" to 0,
             "total" to true,
@@ -60,10 +55,8 @@ class Spider(val client: HttpClient = HttpClient()) {
         ).let {
             encrypt(gson.toJson(it))
         }
-        if (status) {
-            val type = object: TypeToken<Map<String, String>>(){}.type;
-            val params = gson.fromJson<Map<String, String>>(temp, type)
-            val response = client.doPost(API_PLAY_LIST, params)
+        if (requestBody.isNotEmpty()) {
+            val response = client.doPost(API_PLAY_LIST, requestBody)
             if (response.code == 200) {
                 val playListResponse = response.body?.string()
                     ?.let {
@@ -82,7 +75,7 @@ class Spider(val client: HttpClient = HttpClient()) {
      */
     fun fetchMusicUrl(ids: LongArray): List<Music> {
         val collector = mutableListOf<Music>()
-        val status = mapOf(
+        val requestBody = mapOf(
             "ids" to ids,
             "level" to "standard",
             "encodeType" to "ac3",
@@ -90,39 +83,47 @@ class Spider(val client: HttpClient = HttpClient()) {
         ).let {
             encrypt(gson.toJson(it))
         }
-        if (status) {
-            val type = object: TypeToken<Map<String, String>>(){}.type;
-            val params = gson.fromJson<Map<String, String>>(temp, type)
-            val response = client.doPost(API_SONG, params)
-            if (response.code == 200) {
-                response.body?.string()
-                    ?.run {
-                        val musicResponse = gson.fromJson(this, MusicResponse::class.java)
-                        collector.addAll(musicResponse.data)
-                    }
-            }
-        }
+       if (requestBody.isNotEmpty()) {
+           val response = client.doPost(API_SONG, requestBody)
+           if (response.code == 200) {
+               response.body?.string()
+                   ?.run {
+                       val musicResponse = gson.fromJson(this, MusicResponse::class.java)
+                       collector.addAll(musicResponse.data)
+                   }
+           }
+       }
         return collector
     }
 
-    private fun encrypt(content: String): Boolean {
-        (if (WIN) content.replace("\"", "\\\"") else content)
-            .let {
-                val runtime = Runtime.getRuntime()
-                val exec = runtime.exec("$FEATURE_NODE_JS_PATH $ENCRYPT_SCRIPT_PATH $it")
-                exec.waitFor()
-                val status = exec.exitValue()
-                BufferedReader(InputStreamReader(if (status == 0) exec.inputStream else exec.errorStream))
-                    .use {
-                        temp = it.readText()
-                    }
-                return status == 0
-            }
-    }
+//    private fun encrypt(content: String): Boolean {
+//        (if (WIN) content.replace("\"", "\\\"") else content)
+//            .let {
+//                val runtime = Runtime.getRuntime()
+//                val exec = runtime.exec("$FEATURE_NODE_JS_PATH $ENCRYPT_SCRIPT_PATH $it")
+//                exec.waitFor()
+//                val status = exec.exitValue()
+//                BufferedReader(InputStreamReader(if (status == 0) exec.inputStream else exec.errorStream))
+//                    .use {
+//                        temp = it.readText()
+//                        println(temp)
+//                    }
+//                return status == 0
+//            }
+//    }
 
-    companion object {
-        val ENCRYPT_SCRIPT_PATH: String = FEATURE_ENCRYPT_PATH.ifEmpty {
-            Companion::class.java.classLoader.getResource("core.js")!!.path
+    private fun encrypt(content: String): Map<String, String> {
+        val map = mutableMapOf<String, String>()
+        val obj = engine.call(
+            "encrypt",
+            content
+        ) as? ScriptObjectMirror
+
+        obj?.let {
+            it.forEach {k, v ->
+                map.put(k, v as String)
+            }
         }
+        return map;
     }
 }
