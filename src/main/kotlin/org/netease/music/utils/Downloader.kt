@@ -89,9 +89,9 @@ class Downloader {
 
                 sub?.let {
                     script.append("if not exist $sub ($LB")
-                    script.append("\tmd $sub$LB")
+                    script.append("\tmd \"$sub\"$LB")
                     script.append(")$LB")
-                    script.append("cd $sub$LB$LB")
+                    script.append("cd \"$sub\"$LB$LB")
                 }
                 script.append(generateFfmpegCommand(musicEntities))
                 script.append("$LB${LB}PAUSE$LB")
@@ -101,7 +101,7 @@ class Downloader {
                 script.append("#see: https://ffmpeg.org/$LB")
                 script.append("#about: https://github.com/TTTUUUIII$LB$LB")
                 sub?.let {
-                    script.append("mkdir -p $sub && cd $sub$LB")
+                    script.append("mkdir -p '$sub' && cd '$sub'$LB")
                 }
                 script.append(generateFfmpegCommand(musicEntities))
                 script.append("$LB${LB}exit 0$LB")

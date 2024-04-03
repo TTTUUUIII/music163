@@ -1,5 +1,7 @@
 package org.netease.music.conf
 
+import org.netease.music.utils.WIN
+
 /*下载歌曲时是否自动下载歌词，暂时不建议用*/
 const val FEATURE_DOWNLOAD_LYRIC = false
 
@@ -8,4 +10,8 @@ const val FEATURE_DOWNLOAD_LYRIC = false
 const val FEATURE_FFMPEG_PATH = "ffmpeg"
 
 /*下载保存目录*/
-const val FEATURE_OUT = "/home/deliu/Desktop/Media"
+val FEATURE_OUT = if (WIN) {
+    "C:\\Users\\wn123\\Desktop\\Media"
+} else {
+    "/home/deliu/Desktop/Media"
+}

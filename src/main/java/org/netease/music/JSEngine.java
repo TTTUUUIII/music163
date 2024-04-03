@@ -1,25 +1,23 @@
 package org.netease.music;
 
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.jetbrains.annotations.Nullable;
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.script.ScriptException;
 
 public class JSEngine {
-    private final ScriptEngine engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6");
+    private final ScriptEngine engine;
 
-    public JSEngine(String ...scriptsInResource) {
+    public JSEngine() {
+        engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6");
+    }
+
+    public void compile(String js) {
         try {
-            for (String script : scriptsInResource) {
-                try (InputStream in = getClass().getClassLoader().getResource(script).openStream()){
-                    engine.eval(new InputStreamReader(in));
-                }
-            }
-        } catch (Exception e) {
+            engine.eval(js);
+        } catch (ScriptException e) {
             throw new RuntimeException(e);
         }
     }

@@ -14,7 +14,7 @@ repositories {
 dependencies {
     // define a BOM and its version
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-
+    implementation("org.openjdk.nashorn:nashorn-core:15.4")
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
@@ -26,6 +26,6 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
-//kotlin {
-//    jvmToolchain("1.8")
-//}
+kotlin {
+    jvmToolchain(11)
+}

@@ -1,18 +1,20 @@
 package org.netease.music
 
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import jdk.nashorn.api.scripting.ScriptObjectMirror
 import org.netease.music.net.API_PLAY_LIST
 import org.netease.music.net.API_SONG
 import org.netease.music.net.API_SONG_LYRIC
 import org.netease.music.net.HttpClient
-import java.nio.file.Paths
+import org.netease.music.utils.Resources
+import org.openjdk.nashorn.api.scripting.ScriptObjectMirror
 
 class Spider(val client: HttpClient = HttpClient()) {
 
     private val gson = Gson()
-    private val engine = JSEngine("crypto-js.js", "main.js")
+    private val engine = JSEngine().apply {
+        compile(Resources.readString("crypto-js.js"))
+        compile(Resources.readString("main.js"))
+    }
 
     /**
      * 根据歌曲ID获取歌词
@@ -22,8 +24,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "id" to id,
             "lv" to -1,
             "tv" to -1,
-            "limit" to 1000,
-            "csrf_token" to "bfc4ad13014f5066cdee4e18aba3e682"
+            "csrf_token" to ""
         ).let {
             encrypt(gson.toJson(it))
         }
@@ -51,7 +52,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "total" to true,
             "limit" to 1000,
             "n" to 1000,
-            "csrf_token" to "bfc4ad13014f5066cdee4e18aba3e682"
+            "csrf_token" to ""
         ).let {
             encrypt(gson.toJson(it))
         }
@@ -96,22 +97,6 @@ class Spider(val client: HttpClient = HttpClient()) {
         return collector
     }
 
-//    private fun encrypt(content: String): Boolean {
-//        (if (WIN) content.replace("\"", "\\\"") else content)
-//            .let {
-//                val runtime = Runtime.getRuntime()
-//                val exec = runtime.exec("$FEATURE_NODE_JS_PATH $ENCRYPT_SCRIPT_PATH $it")
-//                exec.waitFor()
-//                val status = exec.exitValue()
-//                BufferedReader(InputStreamReader(if (status == 0) exec.inputStream else exec.errorStream))
-//                    .use {
-//                        temp = it.readText()
-//                        println(temp)
-//                    }
-//                return status == 0
-//            }
-//    }
-
     private fun encrypt(content: String): Map<String, String> {
         val map = mutableMapOf<String, String>()
         val obj = engine.call(
@@ -121,7 +106,9 @@ class Spider(val client: HttpClient = HttpClient()) {
 
         obj?.let {
             it.forEach {k, v ->
-                map.put(k, v as String)
+                if (k == "params" || k == "encSecKey") {
+                    map[k] = v as String
+                }
             }
         }
         return map;
