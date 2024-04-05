@@ -1,5 +1,6 @@
 package org.netease.music;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
@@ -14,7 +15,7 @@ public class JSEngine {
         engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6");
     }
 
-    public void compile(String js) {
+    public void compile(@NotNull String js) {
         try {
             engine.eval(js);
         } catch (ScriptException e) {
@@ -22,7 +23,7 @@ public class JSEngine {
         }
     }
 
-    public @Nullable Object call(String func, Object ...args) {
+    public @Nullable Object call(@NotNull String func, Object ...args) {
         Invocable ctx = (Invocable) engine;
         try {
             return ctx.invokeFunction(func, args);
