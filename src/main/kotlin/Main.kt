@@ -3,6 +3,7 @@ import org.netease.music.Spider
 import org.netease.music.conf.FEATURE_OUT
 import org.netease.music.net.HttpClient
 import org.netease.music.utils.AutoGenerator
+import java.io.FileOutputStream
 import java.nio.file.Paths
 import java.util.*
 
@@ -25,8 +26,8 @@ fun main() {
     val musicIds = musicEntities.map {
         it.id
     }.toLongArray()
+    sleep()
     val musicList = spider.fetchMusicUrl(musicIds)
-    Thread.sleep(3000)
     musicList.forEach { music ->
         musicEntities.find {
             it.id == music.id
@@ -34,22 +35,27 @@ fun main() {
             it.url = music.url
             it.bitRate = music.br
             it.type = music.type.lowercase(Locale.getDefault())
+//            it.lyric = spider.fetchLyric(music.id)?.lyric
+//            sleep()
         }
     }
 
     AutoGenerator.generateFfmpegScript(musicEntities, Paths.get(FEATURE_OUT), playList?.name)
-//    if (FEATURE_DOWNLOAD_LYRIC) {
-//        AutoGenerator.downloadLyric(musicEntities, Paths.get(FEATURE_OUT))
-//    }
 
-//    val lyricResponse = spider.fetchLyric(1354489)
-//    lyricResponse?.lyric?.lyric.let {lyric ->
-//        lyric?.let {
-//            FileOutputStream(Paths.get(FEATURE_OUT).resolve("temp.lrc").toFile())
-//                .use {out ->
-//                    out.write(it.encodeToByteArray())
-//                }
-//        }
-//    }
+}
+
+private fun downloadLyric(id: Long) {
+    val lyricResponse = spider.fetchLyric(id)
+    lyricResponse?.lyric?.let { lyric ->
+        FileOutputStream(Paths.get(FEATURE_OUT).resolve("$id.lrc").toFile())
+            .use {
+                it.write(lyric.lyric.encodeToByteArray())
+            }
+    }
+}
+
+private fun sleep() {
+    val random = Random(System.nanoTime())
+    Thread.sleep((random.nextFloat() * 4000 + 1000).toLong())
 }
 

@@ -2,13 +2,15 @@ package org.netease.music.utils
 
 import org.netease.music.MusicEntity
 import org.netease.music.conf.FEATURE_FFMPEG_PATH
+import org.netease.music.conf.FEATURE_OUT
 import java.io.FileOutputStream
 import java.nio.file.Path
+import java.nio.file.Paths
 
 class AutoGenerator {
     companion object {
 
-        private fun generateFfmpegCommand(musicEntities: List<MusicEntity>): String {
+        private fun generateFfmpegCommand(musicEntities: List<MusicEntity>, sub: String? = ""): String {
             val commands = StringBuilder()
             for (music in musicEntities) {
                 if (music.url == null) continue
@@ -30,7 +32,7 @@ class AutoGenerator {
                         "-metadata album_artist=\'${music.album.albumName}\'"
                     ).joinToString(" ")
                 }
-                val output = "${music.name}-${artists}.${music.type}"
+                val filename = "${music.name}-${artists}"
                     .replace("/","")
                     .also {
                         if (WIN) {
@@ -38,13 +40,35 @@ class AutoGenerator {
                         }
                     }
                 val command = if (WIN) {
-                    "$FEATURE_FFMPEG_PATH -i \"${music.url}\" -i \"${music.album.picUrl}\" $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \"$output\"$LB"
+                    "$FEATURE_FFMPEG_PATH -i \"${music.url}\" -i \"${music.album.picUrl}\" $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \"$filename.${music.type}\"$LB"
                 } else {
-                    "$FEATURE_FFMPEG_PATH -i '${music.url}' -i '${music.album.picUrl}' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 '$output'$LB"
+                    "$FEATURE_FFMPEG_PATH -i '${music.url}' -i '${music.album.picUrl}' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 '$filename.${music.type}'$LB"
                 }
                 commands.append(command)
+                downloadLyric(
+                    Paths.get(FEATURE_OUT)
+                        .apply {
+                            sub?.let {
+                                resolve(it)
+                            }
+                        }
+                        .resolve("$filename.lrc"),
+                    music
+                )
             }
             return commands.toString()
+        }
+
+        private fun downloadLyric(filePath: Path, music: MusicEntity): Boolean {
+            var status = false
+            music.lyric?.let { lyric ->
+                FileOutputStream(filePath.toFile())
+                    .use {
+                        it.write(lyric.lyric.encodeToByteArray())
+                    }
+                status = true
+            }
+            return status
         }
 
         fun generateFfmpegScript(musicEntities: List<MusicEntity>, path: Path, sub: String? = null) {
@@ -59,6 +83,7 @@ class AutoGenerator {
                 path
             }
             val script = StringBuilder()
+            val downloadCommand = generateFfmpegCommand(musicEntities, sub)
             if (win) {
                 script.append("CHCP 65001$LB")
                 script.append("@ECHO OFF$LB")
@@ -72,7 +97,7 @@ class AutoGenerator {
                     script.append(")$LB")
                     script.append("cd \"$sub\"$LB$LB")
                 }
-                script.append(generateFfmpegCommand(musicEntities))
+                script.append(downloadCommand)
                 script.append("$LB${LB}PAUSE$LB")
             } else {
                 script.append("#!/bin/sh$LB$LB")
@@ -82,7 +107,7 @@ class AutoGenerator {
                 sub?.let {
                     script.append("mkdir -p '$sub' && cd '$sub'$LB")
                 }
-                script.append(generateFfmpegCommand(musicEntities))
+                script.append(downloadCommand)
                 script.append("$LB${LB}exit 0$LB")
                 scriptPath.toFile().setExecutable(true, false)
             }
