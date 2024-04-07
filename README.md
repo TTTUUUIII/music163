@@ -4,7 +4,7 @@
 
 ### 快速开始
 
-#### 1. 程序最终会输出一个`shell/bat`脚本，脚本会使用`ffmpeg`下载歌曲并设置元数据，因此还需要安装`ffmpeg`
+#### 1. 程序最终会输出一个`shell/bat`脚本，脚本会使用`ffmpeg`下载歌曲，因此需要先安装`ffmpeg`
 
 ```shell
 sudo apt install ffmpeg
@@ -18,4 +18,5 @@ sudo apt install ffmpeg
 
 ### 注意事项
 
-> 在`Features.kt`中提供了一些可配置的项目，详情见注释。
+> 1. 请使用`JDK-11`;
+> 2. 在`Features.kt`中提供了一些可配置的项目，详情见注释。
