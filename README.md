@@ -10,13 +10,17 @@
 sudo apt install ffmpeg
 ```
 
-#### 2. 在`Main.kt`中可设置登录`Cookie`
+```shell
+# 根据歌曲ID下载歌曲
+java -jar music163-1.0.0-all.jar --music 29386030
 
-#### 3. 在`Features.kt`中可通过`FEATURE_OUT`指定输出目录
+# 下载指定歌单ID中的歌曲
+java -jar music163-1.0.0-all.jar --playlist 5378020178
 
-#### 4. 在`Main.kt::fetchPlayList`传入需要下载的歌单`ID`后，点击运行即可生成一个下载脚本。
+#根据歌曲ID下载歌词
+java -jar music163-1.0.0-all.jar --lyric 29386030
+```
 
 ### 注意事项
 
 > 1. 请使用`JDK-11`;
-> 2. 在`Features.kt`中提供了一些可配置的项目，详情见注释。
