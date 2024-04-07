@@ -12,7 +12,7 @@ class Spider(val client: HttpClient = HttpClient()) {
 
     private val gson = Gson()
     private val engine = JSEngine().apply {
-        compile(Resources.readString("crypto-js.js"))
+        include("https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.min.js")
         compile(Resources.readString("main.js"))
     }
 
@@ -80,7 +80,7 @@ class Spider(val client: HttpClient = HttpClient()) {
             "ids" to ids,
             "level" to "standard",
             "encodeType" to "ac3",
-            "csrf_token" to "c7e1c88fbff88d2a5897e3c5e22af657",
+            "csrf_token" to "",
         ).let {
             encrypt(gson.toJson(it))
         }
