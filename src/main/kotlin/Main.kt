@@ -1,16 +1,42 @@
 import org.netease.music.MusicEntity
 import org.netease.music.Spider
-import org.netease.music.conf.FEATURE_OUT
+import org.netease.Context.Companion.OUT_PATH
 import org.netease.music.net.HttpClient
 import org.netease.music.utils.AutoGenerator
 import java.io.FileOutputStream
+import java.net.URL
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
 val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U"))))
 
-fun main() {
-    val playList = spider.fetchPlayList(9644567719)
+fun main(args: Array<String>) {
+    var index = 0
+    while (index < args.size) {
+        when(args[index]) {
+            "--music" -> {
+                downloadMusic(args[++index].toLong())
+            }
+            "-m" -> {
+                downloadMusic(args[++index].toLong())
+            }
+            "--playlist" -> {
+                downloadPlayList(args[++index].toLong())
+            }
+            "-l" -> {
+                downloadPlayList(args[++index].toLong())
+            }
+            "--lyric" -> {
+                downloadLyric(args[++index].toLong())
+            }
+        }
+        index++
+    }
+}
+
+private fun downloadPlayList(listId: Long) {
+    val playList = spider.fetchPlayList(listId)
     val musicEntities = mutableListOf<MusicEntity>()
     playList?.tracks?.forEach { item ->
         musicEntities.add(
@@ -26,7 +52,6 @@ fun main() {
     val musicIds = musicEntities.map {
         it.id
     }.toLongArray()
-    sleep()
     val musicList = spider.fetchMusicUrl(musicIds)
     musicList.forEach { music ->
         musicEntities.find {
@@ -35,19 +60,23 @@ fun main() {
             it.url = music.url
             it.bitRate = music.br
             it.type = music.type.lowercase(Locale.getDefault())
-//            it.lyric = spider.fetchLyric(music.id)?.lyric
-//            sleep()
         }
     }
 
-    AutoGenerator.generateFfmpegScript(musicEntities, Paths.get(FEATURE_OUT), playList?.name)
-
+    AutoGenerator.generateFfmpegScript(musicEntities, Paths.get(OUT_PATH), playList?.name)
 }
 
-private fun downloadLyric(id: Long) {
-    val lyricResponse = spider.fetchLyric(id)
+private fun downloadMusic(musicId: Long) {
+    val musicList = spider.fetchMusicUrl(longArrayOf(musicId))
+    musicList.firstOrNull()?.let { music ->
+        Files.copy(URL(music.url).openStream(), Paths.get(OUT_PATH).resolve("$musicId.${music.type.lowercase()}"))
+    }
+}
+
+private fun downloadLyric(musicId: Long) {
+    val lyricResponse = spider.fetchLyric(musicId)
     lyricResponse?.lyric?.let { lyric ->
-        FileOutputStream(Paths.get(FEATURE_OUT).resolve("$id.lrc").toFile())
+        FileOutputStream(Paths.get(OUT_PATH).resolve("$musicId.lrc").toFile())
             .use {
                 it.write(lyric.lyric.encodeToByteArray())
             }

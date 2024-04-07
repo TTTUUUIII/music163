@@ -1,8 +1,8 @@
 package org.netease.music.utils
 
 import org.netease.music.MusicEntity
-import org.netease.music.conf.FEATURE_FFMPEG_PATH
-import org.netease.music.conf.FEATURE_OUT
+import org.netease.Context.Companion.FFMPEG_PATH
+import org.netease.Context.Companion.OUT_PATH
 import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -40,13 +40,13 @@ class AutoGenerator {
                         }
                     }
                 val command = if (WIN) {
-                    "$FEATURE_FFMPEG_PATH -i \"${music.url}\" -i \"${music.album.picUrl}\" $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \"$filename.${music.type}\"$LB"
+                    "$FFMPEG_PATH -i \"${music.url}\" -i \"${music.album.picUrl}\" $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 \"$filename.${music.type}\"$LB"
                 } else {
-                    "$FEATURE_FFMPEG_PATH -i '${music.url}' -i '${music.album.picUrl}' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 '$filename.${music.type}'$LB"
+                    "$FFMPEG_PATH -i '${music.url}' -i '${music.album.picUrl}' $metadata -map 0 -c:a copy -map 1 -c:v mjpeg -id3v2_version 3 '$filename.${music.type}'$LB"
                 }
                 commands.append(command)
                 downloadLyric(
-                    Paths.get(FEATURE_OUT)
+                    Paths.get(OUT_PATH)
                         .apply {
                             sub?.let {
                                 resolve(it)
@@ -75,9 +75,9 @@ class AutoGenerator {
             val win = System.getProperty("os.name").lowercase().contains("windows")
             val scriptPath: Path = if (path.toFile().isDirectory) {
                 if (win) {
-                    path.resolve("download.bat")
+                    path.resolve("fetch-playlist.bat")
                 } else {
-                    path.resolve("download.sh")
+                    path.resolve("fetch-playlist.sh")
                 }
             } else {
                 path

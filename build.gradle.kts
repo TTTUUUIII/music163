@@ -1,10 +1,12 @@
 plugins {
-    id("java")
+//    id("java")
+    id("com.github.johnrengelman.shadow") version "7.0.0"
     kotlin("jvm") version "1.9.23"
+    application
 }
 
 group = "org.netease"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
 //    mavenCentral()
@@ -21,6 +23,10 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.1")
     implementation("org.riversun:okhttp3-cookie-helper:1.0.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+}
+
+application {
+    mainClass.set("MainKt")
 }
 
 tasks.test {
