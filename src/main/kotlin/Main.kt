@@ -9,7 +9,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
-val spider = Spider(client = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U"))))
+val httpClient = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U")))
+val spider = Spider(client = httpClient)
 
 fun main(args: Array<String>) {
     var index = 0
@@ -69,7 +70,14 @@ private fun downloadPlayList(listId: Long) {
 private fun downloadMusic(musicId: Long) {
     val musicList = spider.fetchMusicUrl(longArrayOf(musicId))
     musicList.firstOrNull()?.let { music ->
-        Files.copy(URL(music.url).openStream(), Paths.get(OUT_PATH).resolve("$musicId.${music.type.lowercase()}"))
+        val response = httpClient.doGet(music.url)
+        if (response.code == 200) {
+            response.body?.let {
+                Files.copy(it.byteStream(), Paths.get(OUT_PATH).resolve("$musicId.${music.type.lowercase()}"))
+            }
+        } else {
+            System.err.println("Unable to request from ${music.url} status=${response.code}.")
+        }
     }
 }
 
