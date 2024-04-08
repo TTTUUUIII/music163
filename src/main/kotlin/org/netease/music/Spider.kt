@@ -6,6 +6,7 @@ import org.netease.music.net.API_SONG
 import org.netease.music.net.API_SONG_LYRIC
 import org.netease.music.net.HttpClient
 import org.netease.music.utils.Resources
+import org.netease.music.utils.error
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror
 
 class Spider(val client: HttpClient = HttpClient()) {
@@ -64,9 +65,9 @@ class Spider(val client: HttpClient = HttpClient()) {
                         gson.fromJson(it, PlayListResponse::class.java)
                     }
                 return playListResponse?.playlist
+            } else {
+                error("Unable request play list id=$id. code=${response.code}")
             }
-        } else {
-            System.err.println("Unable request play list.")
         }
         return null
     }
@@ -92,6 +93,8 @@ class Spider(val client: HttpClient = HttpClient()) {
                        val musicResponse = gson.fromJson(this, MusicResponse::class.java)
                        collector.addAll(musicResponse.data)
                    }
+           } else {
+               error("Unable fetch music ids=${ids.contentToString()}. code=${response.code}")
            }
        }
         return collector
