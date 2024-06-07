@@ -22,3 +22,9 @@ fun <T> T.sleep(min: Long, max: Long) {
     val random = Random(System.nanoTime())
     Thread.sleep((random.nextFloat() * max + min).toLong())
 }
+
+fun String.safePath(): String{
+    return replace("\"", "'")
+        .replace(":", "")
+        .replace("/", "")
+}
