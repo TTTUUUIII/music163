@@ -1,5 +1,18 @@
 package org.netease.music
 
+/**
+ * Music Entity
+ * @property id Long
+ * @property name String
+ * @property artists List<MusicArtist>
+ * @property album MusicAlbum
+ * @property qualities List<MusicQuality>
+ * @property bitRate Int
+ * @property url String?
+ * @property type String?
+ * @property lyric Lyric?
+ * @constructor
+ */
 data class MusicEntity(
     val id: Long,
     val name: String,

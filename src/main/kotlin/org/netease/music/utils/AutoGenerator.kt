@@ -10,6 +10,12 @@ import java.nio.file.Paths
 class AutoGenerator {
     companion object {
 
+        /**
+         * Generate download script, the script will download songs by ffmpeg.
+         * @param musicEntities List<MusicEntity>
+         * @param sub String?
+         * @return String
+         */
         private fun generateFfmpegCommand(musicEntities: List<MusicEntity>, sub: String? = ""): String {
             val commands = StringBuilder()
             for (music in musicEntities) {
@@ -54,6 +60,12 @@ class AutoGenerator {
             return commands.toString()
         }
 
+        /**
+         * Download lyric for music
+         * @param filePath Path
+         * @param music MusicEntity
+         * @return Boolean
+         */
         private fun downloadLyric(filePath: Path, music: MusicEntity): Boolean {
             var status = false
             music.lyric?.let { lyric ->

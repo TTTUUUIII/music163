@@ -18,7 +18,9 @@ class Spider(val client: HttpClient = HttpClient()) {
     }
 
     /**
-     * 根据歌曲ID获取歌词
+     * Fetch lyric by song id.
+     * @param id Long - song id
+     * @return LyricResponse?
      */
     fun fetchLyric(id: Long): LyricResponse? {
         val requestBody = mapOf(
@@ -43,8 +45,11 @@ class Spider(val client: HttpClient = HttpClient()) {
         return null
     }
 
+
     /**
-     * 根据歌单ID获取歌单信息
+     * Fetch playlist by playlist id.
+     * @param id Long - playlist id
+     * @return PlayList?
      */
     fun fetchPlayList(id: Long): PlayList? {
         val requestBody = mapOf(
@@ -72,8 +77,11 @@ class Spider(val client: HttpClient = HttpClient()) {
         return null
     }
 
+
     /**
-     * 根据歌曲ID获取音乐链接
+     * Fetch songs urls by songs id
+     * @param ids LongArray
+     * @return List<Music>
      */
     fun fetchMusicUrl(ids: LongArray): List<Music> {
         val collector = mutableListOf<Music>()
@@ -100,6 +108,11 @@ class Spider(val client: HttpClient = HttpClient()) {
         return collector
     }
 
+    /**
+     * Encrypt request body.
+     * @param content String
+     * @return Map<String, String>
+     */
     private fun encrypt(content: String): Map<String, String> {
         val map = mutableMapOf<String, String>()
         val obj = engine.call(
