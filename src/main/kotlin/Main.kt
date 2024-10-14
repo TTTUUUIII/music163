@@ -88,11 +88,16 @@ private class Application {
     }
 
     companion object {
-        val httpClient = HttpClient(cookies = mapOf("MUSIC_U" to System.getenv("MUSIC_U").also {
-            if (it.isEmpty()) {
-                warning("Will visit the target website as a guest because the \"MUSIC_U\" environment variable is not set.")
+
+        val MUSIC_U by lazy {
+            (System.getProperty("MUSIC_U") ?: System.getenv("MUSIC_U") ?: "").also {
+                if (it.isEmpty()) {
+                    warning("Will visit the target website as a guest because the \"MUSIC_U\" environment variable is not set.")
+                }
             }
-        }))
+        }
+
+        val httpClient = HttpClient(cookies = mapOf("MUSIC_U" to MUSIC_U))
         val spider = Spider(client = httpClient)
     }
 }

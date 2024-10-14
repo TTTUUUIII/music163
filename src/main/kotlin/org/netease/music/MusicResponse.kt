@@ -7,7 +7,7 @@ data class Music(
     val url: String,
     val br: Int,
     val size: String,
-    val md5: String,
+    val md5: String?,
     val type: String,
     val encodeType: String
 )

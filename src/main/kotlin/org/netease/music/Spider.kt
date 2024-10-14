@@ -7,6 +7,7 @@ import org.netease.music.net.API_SONG_LYRIC
 import org.netease.music.net.HttpClient
 import org.netease.music.utils.Resources
 import org.netease.music.utils.error
+import org.netease.music.utils.warning
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror
 
 class Spider(val client: HttpClient = HttpClient()) {
@@ -99,7 +100,13 @@ class Spider(val client: HttpClient = HttpClient()) {
                response.body?.string()
                    ?.run {
                        val musicResponse = gson.fromJson(this, MusicResponse::class.java)
-                       collector.addAll(musicResponse.data)
+                       musicResponse.data.forEach {
+                           if (it.md5 != null) {
+                               collector.add(it)
+                           } else {
+                               warning("Unable fetch music ${it.id}.")
+                           }
+                       }
                    }
            } else {
                error("Unable fetch music ids=${ids.contentToString()}. code=${response.code}")
