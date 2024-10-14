@@ -3,6 +3,7 @@ import org.netease.music.Spider
 import org.netease.Context.Companion.OUT_PATH
 import org.netease.music.net.HttpClient
 import org.netease.music.utils.AutoGenerator
+import org.netease.music.utils.info
 import org.netease.music.utils.warning
 import java.io.FileOutputStream
 import java.nio.file.Files
@@ -14,20 +15,17 @@ private class Application {
         var index = 0
         while (index < args.size) {
             when(args[index]) {
-                "--music" -> {
+                "--music", "-m" -> {
                     downloadMusic(args[++index].toLong())
                 }
-                "-m" -> {
-                    downloadMusic(args[++index].toLong())
-                }
-                "--playlist" -> {
-                    downloadPlayList(args[++index].toLong())
-                }
-                "-l" -> {
+                "--playlist", "-l" -> {
                     downloadPlayList(args[++index].toLong())
                 }
                 "--lyric" -> {
                     downloadLyric(args[++index].toLong())
+                }
+                "--version", "-v" -> {
+                    info("Spider for music163. Version: $VERSION")
                 }
             }
             index++
@@ -88,6 +86,8 @@ private class Application {
     }
 
     companion object {
+
+        const val VERSION = "1.0.4"
 
         val MUSIC_U by lazy {
             (System.getProperty("MUSIC_U") ?: System.getenv("MUSIC_U") ?: "").also {
